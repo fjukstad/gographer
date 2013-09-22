@@ -145,9 +145,7 @@ func main(){
     for i := 0; i < numNodes; i++ {
         id := rand.Intn(numNodes) 
         g.AddNode(id, "node "+strconv.Itoa(id), id, 1)
-
-        
-        g.AddEdge(id,rand.Intn(numNodes),1)
+        g.AddEdge(id,rand.Intn(numNodes), 1)
 
     }
 
