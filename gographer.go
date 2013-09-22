@@ -43,8 +43,8 @@ func Init() Graph{
 }
 
 
-func (g *Graph) AddNode (n Node) {
-    
+func (g *Graph) AddNode (id int, name string, group int, size int) {
+    n := Node{id,name,"group "+strconv.Itoa(group),size}
     // Prevents nodes being added multiple times
     _, alreadyAdded := g.internalId[n.Id]
     if !alreadyAdded {
@@ -105,7 +105,9 @@ func (g *Graph) DumpJSON(filename string){
 
 }
 
-func (g *Graph) AddEdge(e Edge) {
+func (g *Graph) AddEdge(from, to, value int) {
+    e := Edge{from,to,value}
+
     sourceId := g.internalId[e.Source]
     targetId := g.internalId[e.Target]
 
@@ -117,29 +119,39 @@ func (g *Graph) AddEdge(e Edge) {
 
 
 
+func (g *Graph) RemoveEdge(from,to int) {
+    
+    sourceId := g.internalId[from]
+    targetId := g.internalId[to]
+
+
+    for i := range g.Edges {
+        log.Print(g.Edges[i])
+        e := g.Edges[i]
+        if((e.Source == sourceId) && (e.Target == targetId)){
+            g.Edges[i] = Edge{-1,-1,-1}
+        }
+    }
+
+}
+
+
 func main(){
     log.Println("hello")
     g := Init() 
 
     rand.Seed(time.Now().UTC().UnixNano())
-
     numNodes := 50
     for i := 0; i < numNodes; i++ {
         id := rand.Intn(numNodes) 
-        n1 := Node{id, "node "+strconv.Itoa(id), "group 1", 1}
+        g.AddNode(id, "node "+strconv.Itoa(id), id, 1)
 
-        g.AddNode(n1) 
         
-        // adding a random edge
-        e := Edge{id, rand.Intn(numNodes), 1}
-        g.AddEdge(e)
+        g.AddEdge(id,rand.Intn(numNodes),1)
 
-        g.DumpJSON("graph.json")
     }
 
-
-
-
+        g.DumpJSON("graph.json")
 }
 
 
