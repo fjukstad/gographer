@@ -1,12 +1,11 @@
-package main
+package gographer
 
 import (
     "log"
     "encoding/json"
     "os"
-    "math/rand" 
-    "time"
     "strconv"
+	"fmt"
 )
 
 type Graph struct {
@@ -29,7 +28,7 @@ type Edge struct {
     Value int   `json:value, int"`
 }
 
-func Init() Graph{
+func New() Graph{
 
     internalmap := make(map[int] int)
     externalmap := make(map[int] int)
@@ -90,6 +89,7 @@ func (g *Graph) DumpJSON(filename string){
         log.Panic("Marshaling of graph gone wrong")
     }
 
+	fmt.Printf( "Filename: %s", filename );
     // Create file
     file, err := os.Create(filename) 
     if err != nil{
@@ -133,23 +133,6 @@ func (g *Graph) RemoveEdge(from,to int) {
         }
     }
 
-}
-
-
-func main(){
-    log.Println("hello")
-    g := Init() 
-
-    rand.Seed(time.Now().UTC().UnixNano())
-    numNodes := 50
-    for i := 0; i < numNodes; i++ {
-        id := rand.Intn(numNodes) 
-        g.AddNode(id, "node "+strconv.Itoa(id), id, 1)
-        g.AddEdge(id,rand.Intn(numNodes), 1)
-
-    }
-
-        g.DumpJSON("graph.json")
 }
 
 
