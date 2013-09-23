@@ -5,7 +5,6 @@ import (
     "encoding/json"
     "os"
     "strconv"
-	"fmt"
 )
 
 type Graph struct {
@@ -35,9 +34,9 @@ func New() *Graph{
 
     nodes := make([] Node, 0) 
     edges := make([] Edge, 0)
-    
-    graph := Graph {internalmap, externalmap, nodes,edges} 
-    
+
+    graph := Graph {internalmap, externalmap, nodes,edges}
+
     return &graph
 }
 
@@ -47,11 +46,11 @@ func (g *Graph) AddNode (id int, name string, group int, size int) {
     // Prevents nodes being added multiple times
     _, alreadyAdded := g.internalId[n.Id]
     if !alreadyAdded {
-        g.internalId[n.Id] = g.GetNumberOfNodes() 
+        g.internalId[n.Id] = g.GetNumberOfNodes()
         g.externalId[g.GetNumberOfNodes()] = n.Id
         n.Id = g.GetNumberOfNodes()
-        g.Nodes = append(g.Nodes, n) 
-        return 
+        g.Nodes = append(g.Nodes, n)
+        return
     }
 
     // Could return some error, but what the hell
@@ -69,7 +68,7 @@ func (g *Graph) RemoveNode (nodeId int){
 }
 
 func(g *Graph) GetNumberOfNodes() (numberOfNodes int) {
-    
+
     numberOfNodes = 0
 
     for i := range g.Nodes{
@@ -82,16 +81,15 @@ func(g *Graph) GetNumberOfNodes() (numberOfNodes int) {
 
 // Write graph to json file
 func (g *Graph) DumpJSON(filename string){
-    
+
     // Marshal
     b, err := json.Marshal(g)
     if err != nil{
         log.Panic("Marshaling of graph gone wrong")
     }
 
-	fmt.Printf( "Filename: %s", filename );
     // Create file
-    file, err := os.Create(filename) 
+    file, err := os.Create(filename)
     if err != nil{
         log.Panic("Could not create json file for graph")
     }
@@ -101,7 +99,7 @@ func (g *Graph) DumpJSON(filename string){
     if err != nil{
         log.Panic("Could not write json to file")
     }
-    return 
+    return
 
 }
 
@@ -114,19 +112,15 @@ func (g *Graph) AddEdge(from, to, value int) {
     e.Source = sourceId
     e.Target = targetId
 
-    g.Edges = append(g.Edges, e) 
+    g.Edges = append(g.Edges, e)
 }
 
-
-
 func (g *Graph) RemoveEdge(from,to int) {
-    
     sourceId := g.internalId[from]
     targetId := g.internalId[to]
 
 
     for i := range g.Edges {
-        log.Print(g.Edges[i])
         e := g.Edges[i]
         if((e.Source == sourceId) && (e.Target == targetId)){
             g.Edges[i] = Edge{-1,-1,-1}
@@ -134,5 +128,4 @@ func (g *Graph) RemoveEdge(from,to int) {
     }
 
 }
-
 
