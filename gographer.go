@@ -28,7 +28,7 @@ type Edge struct {
     Value int   `json:value, int"`
 }
 
-func New() Graph{
+func New() *Graph{
 
     internalmap := make(map[int] int)
     externalmap := make(map[int] int)
@@ -38,7 +38,7 @@ func New() Graph{
     
     graph := Graph {internalmap, externalmap, nodes,edges} 
     
-    return graph
+    return &graph
 }
 
 
