@@ -15,9 +15,11 @@ Simple graph package for go.
 
 # Using it
 Import it:
+
     import "github.com/fjukstad/gographer"
 
 Using it:
+
     graph = gographer.New();
     // (ID, NodeStringID, GroupName, Size)
     graph.AddNode( 1, "NodeStringID", "GroupName", 1 )
@@ -31,6 +33,8 @@ Using it:
     http.ListenAndServe( ":8080", http.FileServer( http.Dir( "." ) ) )
 
 
-and open localhost:8080 in a webbrowser to se the graph.
+Open localhost:8080 in a webbrowser to se the graph.
+
+Modify the d3js implementation and visualization to your preferences.
 
 
