@@ -5,85 +5,124 @@ import (
     "encoding/json"
     "os"
     "strconv"
+	"fmt"
 )
 
 type Graph struct {
-    internalId map[int] int     // These two are used for the mappings internal
-    externalId map[int] int     // id -> external id and back
-    Nodes [] Node `json:"nodes,omitempty"`
-    Edges [] Edge   `json:"links,omitempty"`
+	Nodes map[string]*Node	`json:"nodes,omitempty"`
+	Edges map[string]*Edge	`json:"links,omitempty"`
 }
 
 type Node struct {
-    Id int          `json:"id,int"`
-    Name string     `json:"name,string"`
-    Group string    `json:"group,string"`
-    Size int        `json:"size,int"`
+	stringIdentifier	string
+    Id		int		`json:"id,int"`
+    Name	string	`json:"name,string"`
+    Group	string	`json:"group,string"`
+    Size	int		`json:"size,int"`
 }
 
 type Edge struct {
-    Source int  `json:"source, int"`
-    Target int  `json:"target, int"`
-    Value int   `json:value, int"`
+	stringIdentifier string
+    Source	int `json:"source, int"`
+    Target	int `json:"target, int"`
+	Id		int	`json:"id, int"`
+	Weight	int `json:"weight, int"`
 }
 
 func New() *Graph{
 
-    internalmap := make(map[int] int)
-    externalmap := make(map[int] int)
+    nodes := make(map[string]*Node)
+    edges := make(map[string]*Edge)
 
-    nodes := make([] Node, 0) 
-    edges := make([] Edge, 0)
-
-    graph := Graph {internalmap, externalmap, nodes,edges}
+    graph := Graph { Nodes: nodes, Edges: edges }
 
     return &graph
 }
 
-
+// Node is uniquely identified by id
 func (g *Graph) AddNode (id int, name string, group int, size int) {
-    n := Node{id,name,"group "+strconv.Itoa(group),size}
+
+    n := &Node{ Id: id, Name: name, Group: "group "+strconv.Itoa(group), Size: size }
+	n.stringIdentifier = fmt.Sprintf( "%d", id);
     // Prevents nodes being added multiple times
-    _, alreadyAdded := g.internalId[n.Id]
-    if !alreadyAdded {
-        g.internalId[n.Id] = g.GetNumberOfNodes()
-        g.externalId[g.GetNumberOfNodes()] = n.Id
-        n.Id = g.GetNumberOfNodes()
-        g.Nodes = append(g.Nodes, n)
-        return
-    }
-
-    // Could return some error, but what the hell
-
+	if _, alreadyAdded := g.Nodes[n.stringIdentifier]; !alreadyAdded {
+		g.Nodes[n.stringIdentifier] = n;
+	}
 }
 func (g *Graph) RemoveNode (nodeId int){
-
-    // First check that node is actually there
-    _, nodePresent := g.internalId[nodeId]
-    if nodePresent{
-        id := g.internalId[nodeId]
-        g.Nodes[id].Id = -1
-    }
-
+	stringIdentifier := fmt.Sprintf( "%d", nodeId );
+	if _, exists := g.Nodes[stringIdentifier]; exists {
+		// TODO: Remove all links associated with node.
+		delete( g.Nodes, stringIdentifier )
+	}
 }
+
+// Add edge between Source and Target
+// Edge is uniquely identified by tuple (source, target, id)
+func (g *Graph) AddEdge(from, to, id, weight int) {
+    e := &Edge{Source: from, Target: to, Id: id, Weight: weight }
+	e.stringIdentifier = fmt.Sprintf( "%d-%d:%d", from, to, id );
+	e.Weight = 1;
+
+	if _, exists := g.Edges[ e.stringIdentifier ]; !exists {
+		g.Edges[ e.stringIdentifier ] = e;
+	}
+}
+
+func (g *Graph) RemoveEdge( from, to, id int) {
+
+	stringIdentifier := fmt.Sprintf( "%d-%d:%d", from, to, id );
+	if _, exists := g.Edges[ stringIdentifier]; exists {
+		delete( g.Edges, stringIdentifier );
+	}
+}
+
+
 
 func(g *Graph) GetNumberOfNodes() (numberOfNodes int) {
 
-    numberOfNodes = 0
+    return len( g.Nodes );
+}
 
-    for i := range g.Nodes{
-        if g.Nodes[i].Id != -1 {
-            numberOfNodes += 1
-        }
-    }
-    return numberOfNodes
+type WriteToJSON struct {
+	Nodes []*Node	`json:"nodes,omitempty"`
+	Edges []*Edge	`json:"links,omitempty"`
 }
 
 // Write graph to json file
 func (g *Graph) DumpJSON(filename string){
 
+	// Build the JSON datastructure to be compatible with d3js
+	var writer WriteToJSON;
+	var jsonIndex int = 0;
+	nodeMapping := make(map[int]int)
+	for _, value := range g.Nodes {
+		var jsonNode Node;
+		nodeMapping[ value.Id ] = jsonIndex;
+		jsonNode = *value;
+		jsonNode.Id = jsonIndex;
+
+		jsonIndex++;
+		writer.Nodes = append( writer.Nodes, &jsonNode );
+	}
+	for _, value := range g.Edges {
+
+		var jsonEdge Edge;
+		jsonEdge = *value;
+		if _, exists := nodeMapping[ value.Source ]; !exists {
+			continue;
+		}
+		jsonEdge.Source = nodeMapping[ value.Source ];
+		if _, exists := nodeMapping[ value.Target ]; !exists {
+			continue;
+		}
+		jsonEdge.Target = nodeMapping[ value.Target ];
+
+		writer.Edges = append ( writer.Edges, &jsonEdge );
+	}
+
     // Marshal
-    b, err := json.Marshal(g)
+    b, err := json.Marshal(writer)
     if err != nil{
         log.Panic("Marshaling of graph gone wrong")
     }
@@ -100,32 +139,6 @@ func (g *Graph) DumpJSON(filename string){
         log.Panic("Could not write json to file")
     }
     return
-
-}
-
-func (g *Graph) AddEdge(from, to, value int) {
-    e := Edge{from,to,value}
-
-    sourceId := g.internalId[e.Source]
-    targetId := g.internalId[e.Target]
-
-    e.Source = sourceId
-    e.Target = targetId
-
-    g.Edges = append(g.Edges, e)
-}
-
-func (g *Graph) RemoveEdge(from,to int) {
-    sourceId := g.internalId[from]
-    targetId := g.internalId[to]
-
-
-    for i := range g.Edges {
-        e := g.Edges[i]
-        if((e.Source == sourceId) && (e.Target == targetId)){
-            g.Edges[i] = Edge{-1,-1,-1}
-        }
-    }
 
 }
 
