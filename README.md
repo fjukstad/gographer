@@ -9,13 +9,27 @@ Simple graph package for go.
 - _index.html_ contains the visualization code itself
 - _graph.json_ contains the output from gographer.go (graph).
 
-# How to run
 
-    go run gographer 
+# Run the rest visualization:
+    go run test_graph/visualization.go
 
-to create a graph. then
+# Using it
+Import it:
+    import "github.com/fjukstad/gographer"
 
-    go run visualizer.go
+Using it:
+    graph = gographer.New();
+    // (ID, NodeStringID, GroupName, Size)
+    graph.AddNode( 1, "NodeStringID", "GroupName", 1 )
+    graph.AddNode( 2, "NodeStringID", "GroupName", 1 )
+
+    // (Source, Target, EdgeID, weight )
+    grap.AddEdge( 1, 2, 0, 1 )
+    graph.AddEdge( 2, 1, 100, 15 )
+
+    graph.DumpJSON( "graph.json" )
+    http.ListenAndServe( ":8080", http.FileServer( http.Dir( "." ) ) )
+
 
 and open localhost:8080 in a webbrowser to se the graph.
 
