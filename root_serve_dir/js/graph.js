@@ -123,21 +123,6 @@ function createGraph() {
     }); 
 }
 
-function updateGraph() {
-    name = "node"+Math.random() * 10
-    name2 = "node"+Math.random() * 100
-
-    g.addNode(name); 
-    g.addNode(name2); 
-    
-    g.addLink(name, name2, 10); 
-    
-
-    //drawGraph();
-    window.setTimeout(updateGraph, 10000); 
-}
-
-
 
 var websocketUrl = "ws://localhost:3999/ws"
 var socket; 
@@ -154,11 +139,9 @@ function initWebSocket(){
         if(message.command == "\"AddEdge\""){
             source =  '' + message.source;
             target =  '' + message.target;
-            //g.addLink("A", "B", 10)
             g.addLink(source, target, '10');
         }
 
-   //     console.log("m.
     }
 
     socket.error = function(m){
@@ -170,8 +153,6 @@ function initWebSocket(){
 $(document).ready(function () {
     initWebSocket(); 
     createGraph();
-    //drawGraph(); 
-    //window.setTimeout(updateGraph, 1000); 
 });
 
 
