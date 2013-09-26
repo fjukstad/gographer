@@ -15,9 +15,11 @@ function graph(el){
         // adding an edge due to undefined source
         // or target 
         if (typeof s == 'undefined'){
+            console.log("could not add link: ",source,"->",target);
             return;
         }
         else if (typeof t == 'undefined') {
+            console.log("could not add link: ",source,"->",target);
             return; 
         }
         else{
