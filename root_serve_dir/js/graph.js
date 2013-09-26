@@ -10,8 +10,17 @@ function graph(el){
     this.addLink = function(source,target,value) {
         s = findNode(source);
         t = findNode(target);
-        links.push({"source":s, "target":t, "value":value}); 
-        drawGraph(); 
+        console.log("s:",s,"t:",t);
+        if (typeof s == 'undefined'){
+            return;
+        }
+        else if (typeof t == 'undefined') {
+            return; 
+        }
+        else{
+            links.push({"source":s, "target":t, "value":value}); 
+            drawGraph(); 
+        }
     }
 
 
@@ -120,10 +129,44 @@ function updateGraph() {
     window.setTimeout(updateGraph, 10000); 
 }
 
+
+
+var websocketUrl = "ws://localhost:3999/ws"
+var socket; 
+function initWebSocket(){
+
+    socket = new WebSocket(websocketUrl);
+    
+    socket.onmessage = function(m) {
+        console.log("Received:", m.data);
+        var message = JSON.parse(m.data);  
+        if(message.command == "\"AddNode\""){
+            id = '' + message.id;
+            console.log("Adding node: ",id); 
+            g.addNode(message.id);
+        }
+        if(message.command == "\"AddEdge\""){
+            source =  '' + message.source;
+            target =  '' + message.target;
+            console.log("Adding edge: ", source, target); 
+            //g.addLink("A", "B", 10)
+            g.addLink(source, target, '10');
+        }
+
+   //     console.log("m.
+    }
+
+    socket.error = function(m){
+        console.log("WebSocketError", m.data);
+    }
+
+}
+
 $(document).ready(function () {
+    initWebSocket(); 
     createGraph();
     //drawGraph(); 
-    window.setTimeout(updateGraph, 1000); 
+    //window.setTimeout(updateGraph, 1000); 
 });
 
 

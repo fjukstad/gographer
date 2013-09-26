@@ -1,6 +1,7 @@
 package gographer
 
 import (
+    "github.com/fjukstad/gowebsocket" 
     "log"
     "encoding/json"
     "os"
@@ -11,6 +12,9 @@ import (
 type Graph struct {
 	Nodes map[string]*Node	`json:"nodes,omitempty"`
 	Edges map[string]*Edge	`json:"links,omitempty"`
+    
+    wss *gowebsocket.WSServer
+    wc *gowebsocket.Client 
 }
 
 type Node struct {
@@ -33,8 +37,16 @@ func New() *Graph{
 
     nodes := make(map[string]*Node)
     edges := make(map[string]*Edge)
+    
+    ip := "localhost"
+    port := ":3999"
 
-    graph := Graph { Nodes: nodes, Edges: edges }
+    wsserver := gowebsocket.New(ip,port) 
+    wsserver.Start() 
+
+    wsclient := gowebsocket.NewClient(ip,port) 
+
+    graph := Graph { Nodes: nodes, Edges: edges, wss: wsserver, wc: wsclient }
 
     return &graph
 }
@@ -42,11 +54,15 @@ func New() *Graph{
 // Node is uniquely identified by id
 func (g *Graph) AddNode (id int, name string, group int, size int) {
 
-    n := &Node{ Id: id, Name: name, Group: "group "+strconv.Itoa(group), Size: size }
+    n := &Node{ Id: id, Name: name, Group: "group "+strconv.Itoa(group),
+                Size: size }
+
 	n.stringIdentifier = fmt.Sprintf( "%d", id);
+
     // Prevents nodes being added multiple times
 	if _, alreadyAdded := g.Nodes[n.stringIdentifier]; !alreadyAdded {
 		g.Nodes[n.stringIdentifier] = n;
+        g.BroadcastAddNode(*n)
 	}
 }
 func (g *Graph) RemoveNode (nodeId int){
@@ -66,6 +82,7 @@ func (g *Graph) AddEdge(from, to, id, weight int) {
 
 	if _, exists := g.Edges[ e.stringIdentifier ]; !exists {
 		g.Edges[ e.stringIdentifier ] = e;
+        g.BroadcastAddEdge(*e)
 	}
 }
 
@@ -76,7 +93,6 @@ func (g *Graph) RemoveEdge( from, to, id int) {
 		delete( g.Edges, stringIdentifier );
 	}
 }
-
 
 
 func(g *Graph) GetNumberOfNodes() (numberOfNodes int) {
