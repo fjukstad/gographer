@@ -10,7 +10,10 @@ function graph(el){
     this.addLink = function(source,target,value) {
         s = findNode(source);
         t = findNode(target);
-        console.log("s:",s,"t:",t);
+        
+        // These two ensure that there are no errors when
+        // adding an edge due to undefined source
+        // or target 
         if (typeof s == 'undefined'){
             return;
         }
@@ -60,7 +63,6 @@ var nodes = force.nodes(),
     links = force.links(); 
 
 function drawGraph() {
-    console.log("Drawing graph: ", nodes); 
 
     force.nodes(nodes) 
         .start(); 
@@ -70,7 +72,6 @@ function drawGraph() {
         .attr("class", "link")
         .style("stroke-width", 2); 
     
-    console.log(link);
     //svg.selectAll(".link").exit().remove()
     link.exit().remove(); 
 
@@ -85,8 +86,6 @@ function drawGraph() {
 
         node.append("title")
             .text(function(d) {
-                console.log("d:", d); 
-                console.log("nodes:", nodes); 
                 return d.id;
             }); 
     node.exit()
@@ -109,9 +108,19 @@ function tick(){
 
 function createGraph() {
     g = new graph();
-    g.addNode('A') 
-    g.addNode('B')
-    g.addLink('A', 'B', 10); 
+
+    // Init graph from json 
+    d3.json("graph.json", function(error, graph){
+        for(i in graph.nodes) {
+            new_node = graph.nodes[i];
+            g.addNode(new_node.id);
+        }
+        for (j in graph.links) {
+            new_edge = graph.links[j];
+            g.addLink(new_edge.source, new_edge.target, 
+                new_edge.weight);
+        }
+    }); 
 }
 
 function updateGraph() {
@@ -123,7 +132,6 @@ function updateGraph() {
     
     g.addLink(name, name2, 10); 
     
-    console.log("added node: ", name) 
 
     //drawGraph();
     window.setTimeout(updateGraph, 10000); 
@@ -138,17 +146,14 @@ function initWebSocket(){
     socket = new WebSocket(websocketUrl);
     
     socket.onmessage = function(m) {
-        console.log("Received:", m.data);
         var message = JSON.parse(m.data);  
         if(message.command == "\"AddNode\""){
             id = '' + message.id;
-            console.log("Adding node: ",id); 
             g.addNode(message.id);
         }
         if(message.command == "\"AddEdge\""){
             source =  '' + message.source;
             target =  '' + message.target;
-            console.log("Adding edge: ", source, target); 
             //g.addLink("A", "B", 10)
             g.addLink(source, target, '10');
         }
