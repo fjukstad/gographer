@@ -1,88 +1,16 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="css/graph.css">
+    <body>
+        <h1> Graph Visualizer </h1>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script
+            src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+        </script>
+        <script src="js/graph.js"></script>
+        <div id="svgdiv"></div>
+        <div id="nodes"></div>
+        <div id="links"></div>
+    </body>
+</hrml>
 
-.node {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
-
-.link {
-  stroke: #999;
-  stroke-opacity: .6;
-}
-
-</style>
-<body>
-    <h1> Graph Visualizer </h1>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script>
-
-var width = 960,
-    height = 500;
-
-var color = d3.scale.category20();
-
-var force = d3.layout.force()
-    .charge(-50)
-    .linkDistance(120)
-    .gravity(0)
-    .size([width, height]);
-
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
-d3.json("graph.json", function(error, graph) {
-  force
-      .nodes(graph.nodes)
-      .links(graph.links)
-      .start();
-
-  var link = svg.selectAll(".link")
-      .data(graph.links)
-    .enter().append("line")
-      .attr("class", "link")
-      .style("stroke-width", function(d) { return Math.sqrt(d.value); });
-
-
-    var node = svg.selectAll(".node")
-                .data(graph.nodes)
-                .enter().append("g")
-                .attr("class", "node")
-                .call(force.drag);
-
-
-    node.append("circle") 
-    .attr("r",20)
-    .style("fill", function(d){
-            return color(d.name);
-        })
-
-
-    node.append("text")
-        .attr("dx", 23)
-        .attr("dy", ".35em")
-        .style("stroke", "none")
-        .text(function(d) {
-            console.log(d.name); 
-            return d.name; 
-        }); 
-
-    force.on("tick", function() {
-        link.attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
-
-    node.attr("transform", function(d) { 
-         return "translate(" + d.x + "," + d.y + ")"; 
-     });  });
-});
-
-
-function updateGraph() {
-
-}
-
-</script>
