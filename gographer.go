@@ -11,7 +11,7 @@ import (
 
 type Graph struct {
 	Nodes map[string]*Node `json:"nodes,omitempty"`
-	Edges map[string]*Edge `json:"links,omitempty"`
+	Edges map[string]*Edge `json:"edges,omitempty"`
 
 	wss *gowebsocket.WSServer
 	wc  *gowebsocket.Client
@@ -70,8 +70,9 @@ func (g *Graph) AddNode(id int, name string, group int, size int) {
 }
 func (g *Graph) RemoveNode(nodeId int) {
 	stringIdentifier := fmt.Sprintf("%d", nodeId)
-	if _, exists := g.Nodes[stringIdentifier]; exists {
+	if node, exists := g.Nodes[stringIdentifier]; exists {
 		// TODO: Remove all links associated with node.
+		g.BroadcastRemoveNode(*node)
 		delete(g.Nodes, stringIdentifier)
 	}
 }
@@ -92,7 +93,8 @@ func (g *Graph) AddEdge(from, to, id, weight int) {
 func (g *Graph) RemoveEdge(from, to, id int) {
 
 	stringIdentifier := fmt.Sprintf("%d-%d:%d", from, to, id)
-	if _, exists := g.Edges[stringIdentifier]; exists {
+	if edge, exists := g.Edges[stringIdentifier]; exists {
+		g.BroadcastRemoveEdge(*edge)
 		delete(g.Edges, stringIdentifier)
 	}
 }
@@ -110,37 +112,8 @@ type WriteToJSON struct {
 // Write graph to json file
 func (g *Graph) DumpJSON(filename string) {
 
-	// Build the JSON datastructure to be compatible with d3js
-	var writer WriteToJSON
-	var jsonIndex int = 0
-	nodeMapping := make(map[int]int)
-	for _, value := range g.Nodes {
-		var jsonNode Node
-		nodeMapping[value.Id] = jsonIndex
-		jsonNode = *value
-		jsonNode.Id = jsonIndex
-
-		jsonIndex++
-		writer.Nodes = append(writer.Nodes, &jsonNode)
-	}
-	for _, value := range g.Edges {
-
-		var jsonEdge Edge
-		jsonEdge = *value
-		if _, exists := nodeMapping[value.Source]; !exists {
-			continue
-		}
-		jsonEdge.Source = nodeMapping[value.Source]
-		if _, exists := nodeMapping[value.Target]; !exists {
-			continue
-		}
-		jsonEdge.Target = nodeMapping[value.Target]
-
-		writer.Edges = append(writer.Edges, &jsonEdge)
-	}
-
 	// Marshal
-	b, err := json.Marshal(writer)
+	b, err := json.Marshal(g)
 	if err != nil {
 		log.Panic("Marshaling of graph gone wrong")
 	}
