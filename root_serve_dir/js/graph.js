@@ -91,7 +91,7 @@ function Graph(el) {
         .append('svg:g');
 
     var force = d3.layout.force()
-          .charge( -50 )
+          .charge( -600 )
           .linkDistance( 30 )
           .size([width, height]);
 
@@ -129,7 +129,7 @@ function Graph(el) {
             .attr("class", "node")
             .call(force.drag);
         nodeEnter.append("svg:circle")
-            .attr("r", 6)
+            .attr("r", 10)
             .attr("class", "nodeStrokeClass")
             .style( "fill", function(d) {
                 return color(d.id);
