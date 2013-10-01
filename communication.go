@@ -5,6 +5,11 @@ import (
 	"log"
 )
 
+type InitGraphMessage struct {
+	Command string `json:"command,string"`
+	Graph string `json:"graph,string"`
+}
+
 type AddNodeMessage struct {
 	Command string `json:"command,string"`
 	Id      int    `json:"id,int"`
