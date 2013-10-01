@@ -39,13 +39,13 @@ func New() *Graph {
 	nodes := make(map[string]*Node)
 	edges := make(map[string]*Edge)
 
-	ip := "localhost"
 	port := ":3999"
 
-	wsserver := gowebsocket.New(ip, port)
+	// Listen on all IP addresses
+	wsserver := gowebsocket.New("", port)
 	wsserver.Start()
 
-	wsclient, err := gowebsocket.NewClient(ip, port)
+	wsclient, err := gowebsocket.NewClient("localhost", port)
 	if err != nil {
 		/* TODO: Notify that websockets are disabled */
 	}
