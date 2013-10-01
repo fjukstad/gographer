@@ -1,63 +1,57 @@
 package main
 
 import (
-	"net/http"
-	"github.com/egraff/gographer"
+	"github.com/fjukstad/gographer"
+	"log"
 	"math/rand"
-	"time"
+	"net/http"
 	"strconv"
+	"time"
 	"os"
-    "log"
 )
 
 // Make random changes to graph
-func makeRandomChanges (g *gographer.Graph, filename string) {
-    
-    nodesToBeRemoved := 2
-    nodesToBeAdded := 5
-    
-    for {   
-        numNodes := g.GetNumberOfNodes() 
+func makeRandomChanges (g *gographer.Graph) {
+	nodesToBeRemoved := 2
+	nodesToBeAdded := 5
 
-        // Remove some nodes
-        for i := 0; i < nodesToBeRemoved; i++ {
-            id := rand.Intn(numNodes) 
-            g.RemoveNode(id)
-        }
-        
-        // Add some more nodes and edges
-        for i := 0; i < nodesToBeAdded; i++{
-            id := rand.Intn(numNodes)
-            g.AddNode(id, "node "+strconv.Itoa(id), id, 1)
-            g.AddEdge(id, rand.Intn(numNodes), id,1)
-        }
+	for {   
+		numNodes := g.GetNumberOfNodes() 
 
-        // dump everything to a file
-        g.DumpJSON(filename) 
-    
-        time.Sleep(2000 * time.Millisecond)
-    }
+		// Remove some nodes
+		for i := 0; i < nodesToBeRemoved; i++ {
+			id := rand.Intn(numNodes) 
+			g.RemoveNode(id)
+		}
+
+		// Add some more nodes and edges
+		for i := 0; i < nodesToBeAdded; i++{
+			id := rand.Intn(numNodes)
+			g.AddNode(id, "node "+strconv.Itoa(id), id, 1)
+			g.AddEdge(id, rand.Intn(numNodes), id,1)
+		}
+
+		time.Sleep(2000 * time.Millisecond)
+	}
 }
 
 func main(){
-    g := gographer.New()
+	g := gographer.New()
 
-    rand.Seed(time.Now().UTC().UnixNano())
-    numNodes := 50
-    for i := 0; i < numNodes; i++ {
-        id := rand.Intn(numNodes)
-        g.AddNode(id, "node "+strconv.Itoa(id), id, 1)
-        g.AddEdge(id,rand.Intn(numNodes),id, 1)
-    }
+	rand.Seed(time.Now().UTC().UnixNano())
+	numNodes := 50
+	for i := 0; i < numNodes; i++ {
+		id := rand.Intn(numNodes)
+		g.AddNode(id, "node "+strconv.Itoa(id), id, 1)
+		g.AddEdge(id,rand.Intn(numNodes),id, 1)
+	}
 
 	gopath := os.Getenv( "GOPATH" );
 	rootServeDir := gopath + "/src/github.com/fjukstad/gographer/root_serve_dir/"
-    filename := rootServeDir + "graph.json"
-	g.DumpJSON(filename)
 
-    go makeRandomChanges(g, filename) 
-    
-    log.Println("Graph created, go visit at localhost:8080")
+	go makeRandomChanges(g) 
+
+	log.Println("Graph created, go visit at localhost:8080")
 
 	panic(http.ListenAndServe(":8080", http.FileServer(http.Dir( rootServeDir ))))
 }

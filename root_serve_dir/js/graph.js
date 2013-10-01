@@ -1,5 +1,3 @@
-var graph;
-
 function Graph(el) {
 
     // Add and remove elements on the graph object
@@ -178,62 +176,65 @@ function Graph(el) {
     update();
 }
 
-var websocketUrl = "ws://" + window.location.hostname + ":3999/ws"
-var socket; 
-function initWebSocket(){
+(function($) {
+    var graph;
+    var websocketUrl = "ws://" + window.location.hostname + ":3999/ws"
+    var socket; 
+    function initWebSocket(){
 
-    socket = new WebSocket(websocketUrl);
-    
-    socket.onmessage = function(m) {
-        var message = JSON.parse(m.data);
-        if(message.command == "\"InitGraph\""){
-            json = JSON.parse(JSON.parse(message.graph));
-            for(var i in json.nodes) {
-                var n = json.nodes[i];
-                //g.addNode( createNodeMap( n.id, n.name, n.group, n.size ) );
-                graph.addNode( n.id );
+        socket = new WebSocket(websocketUrl);
+        
+        socket.onmessage = function(m) {
+            var message = JSON.parse(m.data);
+            if(message.command == "\"InitGraph\""){
+                json = JSON.parse(JSON.parse(message.graph));
+                for(var i in json.nodes) {
+                    var n = json.nodes[i];
+                    //g.addNode( createNodeMap( n.id, n.name, n.group, n.size ) );
+                    graph.addNode( n.id );
+                }
+                for (var j in json.edges) {
+                    var e = json.edges[j];
+                    //g.addLink( createEdgeMap( e.source, e.target, e.id, e.weight ) );
+                    graph.addLink( e.source, e.target, e.weight );
+                }
             }
-            for (var j in json.edges) {
-                var e = json.edges[j];
-                //g.addLink( createEdgeMap( e.source, e.target, e.id, e.weight ) );
-                graph.addLink( e.source, e.target, e.weight );
+            if(message.command == "\"AddNode\""){
+                //graph.addNode( createNodeMap( message.id, message.name, 0, message.size ) );
+                graph.addNode( message.id );
+            }
+            if(message.command == "\"AddEdge\""){
+                //graph.addLink( createEdgeMap( message.source, message.target, message.id, message.weight ) );
+                graph.addLink( message.source, message.target, message.weight );
+            }
+            if (message.command == "\"RemoveNode\"") {
+                graph.removeNode(message.id)
+            }
+            if (message.command == "\"RemoveEdge\"") {
+                source = '' + message.source;
+                target = '' + message.target;
+                id = '' + message.id;
+                graph.removeLink( source, target );
             }
         }
-        if(message.command == "\"AddNode\""){
-            //graph.addNode( createNodeMap( message.id, message.name, 0, message.size ) );
-            graph.addNode( message.id );
+
+        socket.error = function(m){
+            console.log("WebSocketError", m.data);
         }
-        if(message.command == "\"AddEdge\""){
-            //graph.addLink( createEdgeMap( message.source, message.target, message.id, message.weight ) );
-            graph.addLink( message.source, message.target, message.weight );
-        }
-        if (message.command == "\"RemoveNode\"") {
-            graph.removeNode(message.id)
-        }
-        if (message.command == "\"RemoveEdge\"") {
-            source = '' + message.source;
-            target = '' + message.target;
-            id = '' + message.id;
-            graph.removeLink( source, target );
-        }
+
     }
 
-    socket.error = function(m){
-        console.log("WebSocketError", m.data);
+
+    var createEdgeMap = function( sourceID, targetID, id, weight ) {
+        return { "NodeIDSource": sourceID, "NodeIDTarget": targetID, "EdgeID": id, "Weight": weight };
     }
 
-}
+    var createNodeMap = function( NodeID, name, group, size ) {
+        return { "NodeID": NodeID, "Name": name, "Group": group, "Size": size }
+    }
 
-
-var createEdgeMap = function( sourceID, targetID, id, weight ) {
-  return { "NodeIDSource": sourceID, "NodeIDTarget": targetID, "EdgeID": id, "Weight": weight };
-}
-
-var createNodeMap = function( NodeID, name, group, size ) {
-  return { "NodeID": NodeID, "Name": name, "Group": group, "Size": size }
-}
-
-$(document).ready(function () {
-    graph = new Graph("#svgdiv");
-    initWebSocket();
-});
+    $(document).ready(function() {
+        graph = new Graph("#svgdiv");
+        initWebSocket();
+    });
+})(jQuery);
