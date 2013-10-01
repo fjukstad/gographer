@@ -4,7 +4,7 @@ import (
 	"code.google.com/p/go.net/websocket"
 	"encoding/json"
 	"fmt"
-	"github.com/fjukstad/gowebsocket"
+	"github.com/egraff/gowebsocket"
 	"log"
 	"os"
 	"strconv"
