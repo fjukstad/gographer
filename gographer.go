@@ -1,6 +1,7 @@
 package gographer
 
 import (
+	"code.google.com/p/go.net/websocket"
 	"encoding/json"
 	"fmt"
 	"github.com/fjukstad/gowebsocket"
@@ -34,7 +35,30 @@ type Edge struct {
 	Weight           int `json:"weight, int"`
 }
 
+/* This is invoked first for all new connections.
+ * Output current graph state before giving out updates
+ */
+func (g *Graph) Handler(conn *websocket.Conn) {
+	b, err := json.Marshal(g)
+	if err != nil {
+		log.Panic("Marshaling went bad: ", err)
+	}
+
+	msg := InitGraphMessage{
+		Command: "InitGraph",
+		Graph:   string(b),
+	}
+
+	encoded, err := json.Marshal(msg)
+	if err != nil {
+		log.Panic("Marshaling went oh so bad: ", err)
+	}
+
+	conn.Write(encoded)
+}
+
 func New() *Graph {
+	var graph *Graph = new(Graph)
 
 	nodes := make(map[string]*Node)
 	edges := make(map[string]*Edge)
@@ -43,6 +67,7 @@ func New() *Graph {
 
 	// Listen on all IP addresses
 	wsserver := gowebsocket.New("", port)
+	wsserver.SetConnectionHandler(graph)
 	wsserver.Start()
 
 	wsclient, err := gowebsocket.NewClient("localhost", port)
@@ -50,9 +75,12 @@ func New() *Graph {
 		/* TODO: Notify that websockets are disabled */
 	}
 
-	graph := Graph{Nodes: nodes, Edges: edges, wss: wsserver, wc: wsclient}
+	graph.Nodes = nodes
+	graph.Edges = edges
+	graph.wss = wsserver
+	graph.wc = wsclient
 
-	return &graph
+	return graph
 }
 
 // Node is uniquely identified by id
