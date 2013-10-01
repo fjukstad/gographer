@@ -11,7 +11,7 @@ import (
 )
 
 // Make random changes to graph
-func makeRandomChanges (g *gographer.Graph, filename string) {
+func makeRandomChanges (g *gographer.Graph) {
     
     nodesToBeRemoved := 2
     nodesToBeAdded := 5
@@ -31,9 +31,6 @@ func makeRandomChanges (g *gographer.Graph, filename string) {
             g.AddNode(id, "node "+strconv.Itoa(id), id, 1)
             g.AddEdge(id, rand.Intn(numNodes), id,1)
         }
-
-        // dump everything to a file
-        g.DumpJSON(filename) 
     
         time.Sleep(2000 * time.Millisecond)
     }
@@ -52,10 +49,8 @@ func main(){
 
 	gopath := os.Getenv( "GOPATH" );
 	rootServeDir := gopath + "/src/github.com/fjukstad/gographer/root_serve_dir/"
-    filename := rootServeDir + "graph.json"
-	g.DumpJSON(filename)
 
-    go makeRandomChanges(g, filename) 
+    go makeRandomChanges(g) 
     
     log.Println("Graph created, go visit at localhost:8080")
 
