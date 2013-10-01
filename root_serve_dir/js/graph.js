@@ -226,11 +226,11 @@ function initWebSocket(){
 
 
 var createEdgeMap = function( sourceID, targetID, id, weight ) {
-  return { "NodeIDSource": sourceID, "NodeIDTarget": targetID, "EdgeID": id, "Weight": weight };
+    return { "NodeIDSource": sourceID, "NodeIDTarget": targetID, "EdgeID": id, "Weight": weight };
 }
 
 var createNodeMap = function( NodeID, name, group, size ) {
-  return { "NodeID": NodeID, "Name": name, "Group": group, "Size": size }
+    return { "NodeID": NodeID, "Name": name, "Group": group, "Size": size }
 }
 
 $(document).ready(function () {
