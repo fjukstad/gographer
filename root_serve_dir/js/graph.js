@@ -197,7 +197,7 @@ function createGraph() {
 }
 
 
-var websocketUrl = "ws://localhost:3999/ws"
+var websocketUrl = "ws://" + window.location.hostname + ":3999/ws"
 var socket; 
 function initWebSocket(){
 
