@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"github.com/egraff/gographer"
+	"github.com/fjukstad/gographer"
 	"math/rand"
 	"time"
 	"strconv"
