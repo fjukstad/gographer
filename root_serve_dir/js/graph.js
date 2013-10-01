@@ -178,33 +178,27 @@ function Graph(el) {
     update();
 }
 
-function createGraph() {
-    graph = new Graph("#svgdiv");
-
-    // Init graph from json 
-    d3.json("graph.json", function(error, json){
-        for(var i in json.nodes) {
-            var n = json.nodes[i];
-            //g.addNode( createNodeMap( n.id, n.name, n.group, n.size ) );
-            graph.addNode( n.id );
-        }
-        for (var j in json.edges) {
-            var e = json.edges[j];
-            //g.addLink( createEdgeMap( e.source, e.target, e.id, e.weight ) );
-            graph.addLink( e.source, e.target, e.weight );
-        }
-    }); 
-}
-
-
-var websocketUrl = "ws://localhost:3999/ws"
+var websocketUrl = "ws://" + window.location.hostname + ":3999/ws"
 var socket; 
 function initWebSocket(){
 
     socket = new WebSocket(websocketUrl);
     
     socket.onmessage = function(m) {
-        var message = JSON.parse(m.data);  
+        var message = JSON.parse(m.data);
+        if(message.command == "\"InitGraph\""){
+            json = JSON.parse(JSON.parse(message.graph));
+            for(var i in json.nodes) {
+                var n = json.nodes[i];
+                //g.addNode( createNodeMap( n.id, n.name, n.group, n.size ) );
+                graph.addNode( n.id );
+            }
+            for (var j in json.edges) {
+                var e = json.edges[j];
+                //g.addLink( createEdgeMap( e.source, e.target, e.id, e.weight ) );
+                graph.addLink( e.source, e.target, e.weight );
+            }
+        }
         if(message.command == "\"AddNode\""){
             //graph.addNode( createNodeMap( message.id, message.name, 0, message.size ) );
             graph.addNode( message.id );
@@ -240,6 +234,6 @@ var createNodeMap = function( NodeID, name, group, size ) {
 }
 
 $(document).ready(function () {
+    graph = new Graph("#svgdiv");
     initWebSocket();
-    createGraph();
 });
