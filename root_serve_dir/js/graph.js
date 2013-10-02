@@ -96,8 +96,8 @@ function Graph(el) {
     };
 
     // set up the D3 visualisation in the specified element
-    var width = 1200,
-        height = 800;
+    var width = window.innerWidth,
+        height = window.innerHeight;
     var color = d3.scale.category20();
 
     var vis = d3.select("#svgdiv")
@@ -108,7 +108,7 @@ function Graph(el) {
         .append('svg:g');
 
     var force = d3.layout.force()
-          .charge( -600 )
+          .charge( -150 )
           .linkDistance( -20 )
           .size([width, height]);
 
