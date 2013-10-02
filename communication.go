@@ -20,10 +20,10 @@ type AddNodeMessage struct {
 
 type AddEdgeMessage struct {
 	Command string `json:"command,string"`
-	Source  int    `json:"source, int"`
-	Target  int    `json:"target, int"`
-	Id      int    `json:"id, int"`
-	Weight  int    `json:"weight, int"`
+	Source  int    `json:"source,int"`
+	Target  int    `json:"target,int"`
+	Id      int    `json:"id,int"`
+	Weight  int    `json:"weight,int"`
 }
 
 type RemoveNodeMessage struct {
@@ -33,9 +33,9 @@ type RemoveNodeMessage struct {
 
 type RemoveEdgeMessage struct {
 	Command string `json:"command,string"`
-	Source  int    `json:"source, int"`
-	Target  int    `json:"target, int"`
-	Id      int    `json:"id", int"`
+	Source  int    `json:"source,int"`
+	Target  int    `json:"target,int"`
+	Id      int    `json:"id,int"`
 }
 
 func (g *Graph) BroadcastAddNode(n Node) {
@@ -100,6 +100,22 @@ func (g *Graph) BroadcastRemoveEdge(e Edge) {
 	encoded, err := json.Marshal(msg)
 	if err != nil {
 		log.Panic("Marshaling of BoradcastRemoveEdge failed, err: ", err)
+	}
+
+	g.wc.SendBytes(encoded)
+}
+
+func (g *Graph) BroadcastRenameNode(n Node) {
+	msg := SetNodeNameMessage {
+		Command: "SetNodeName",
+		Id:      n.Id,
+		Name:    n.Name,
+	}
+
+	encoded, err := json.Marshal(msg)
+
+	if err != nil {
+		log.Panic("Marshaling went oh so bad: ", err)
 	}
 
 	g.wc.SendBytes(encoded)
