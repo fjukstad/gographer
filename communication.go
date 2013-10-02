@@ -38,6 +38,12 @@ type RemoveEdgeMessage struct {
 	Id      int    `json:"id,int"`
 }
 
+type SetNodeNameMessage struct {
+	Command string `json:"command,string"`
+	Id      int    `json:"id,int"`
+	Name    string `json:"name,string"`
+}
+
 func (g *Graph) BroadcastAddNode(n Node) {
 	msg := AddNodeMessage{
 		Command: "AddNode",
