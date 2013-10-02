@@ -1,0 +1,20 @@
+/*
+h1{
+    color: #ddd;
+}
+body{
+    
+    background-color: #000; 
+}
+*/
+#vis{
+  width: 500px;
+  height: 500px;
+  position: relative;
+}
+
+#sig{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}

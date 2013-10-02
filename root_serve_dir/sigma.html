@@ -2,13 +2,20 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <link rel="stylesheet" type="text/css" href="css/graph.css"/>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="js/sigma-graph.js"></script>
-  </head>
+    <link rel="stylesheet" type="text/css" href="css/sigma-graph.css"/>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+    <script  type="text/javascript" src="http://sigmajs.org/js/sigma.min.js"></script>
+    <script  type="text/javascript" src="http://sigmajs.org/js/sigma.forceatlas2.js"></script>
+
+</head>
   <body>
     <h1>Graph Visualizer</h1>
-    <h5>Dynamic updates through websocket</h5>
-    <div id="svgdiv"></div>
+    <h5>Using Sigma.js</h5>
+    <div id="vis">
+        <div id="sig"></div>
+    </div>
+    <script type="text/javascript" src="js/sigma-graph.js"></script>
   </body>
 </html>
