@@ -9,4 +9,8 @@
   stroke-opacity: .6;
 }
 
-
+.nodeText {
+  stroke: none;
+  font-size: 12px;
+  fill: #444;
+}
