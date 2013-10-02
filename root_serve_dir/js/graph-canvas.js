@@ -128,17 +128,22 @@ function Graph(el) {
             links.forEach(function(d){
                 context.moveTo(d.source.x, d.source.y);
                 context.lineTo(d.target.x, d.target.y); 
+                
             }); 
+                context.stroke(); 
 
-            context.stroke(); 
-
+            
             context.beginPath();
             nodes.forEach(function(d,i) {
                 context.fillStyle = color(d);
                 context.arc(d.x, d.y, 4.5, 0, 2 * Math.PI);
-            });
-            context.fill();
 
+                // label
+                context.fillText(d.name, d.x + 10, d.y); 
+                
+            });
+
+             context.fill(); 
 
             
         }
