@@ -79,7 +79,6 @@ function initWebSocket(){
 
             }
             if(message.command == "\"AddNode\""){
-                //graph.addNode( createNodeMap( message.id, message.name, 0, message.size ) );
                 graph.addNode( message.id, {
                         id: message.id,
                         x: Math.random()*100,
@@ -90,7 +89,6 @@ function initWebSocket(){
                     });
             }
             if(message.command == "\"AddEdge\""){
-                //graph.addLink( createEdgeMap( message.source, message.target, message.id, message.weight ) );
                 graph.addEdge( message.source, message.target, message.weight );
             }
             if (message.command == "\"RemoveNode\"") {
