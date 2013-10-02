@@ -120,7 +120,6 @@ func (g *Graph) AddEdge(from, to, id, weight int) {
 }
 
 func (g *Graph) RemoveEdge(from, to, id int) {
-
 	stringIdentifier := fmt.Sprintf("%d-%d:%d", from, to, id)
 	if edge, exists := g.Edges[stringIdentifier]; exists {
 		g.BroadcastRemoveEdge(*edge)
