@@ -1,7 +1,7 @@
 function Graph(el) {
 
     // Add and remove elements on the graph object
-    this.addNode = function (id) {
+    this.addNode = function (id, name) {
         var n = findNode( id );
         if ( typeof n != 'undefined' ) {
             console.log( "Attempted to add node which already exists: " + id );
@@ -9,7 +9,8 @@ function Graph(el) {
             return;
         }
         nodes.push({
-            "id": id
+            id: id,
+            name: name,
         });
         update();
     };
@@ -51,15 +52,33 @@ function Graph(el) {
         var s = findNode( source );
         var t = findNode( target );
         if ( typeof s == 'undefined' || typeof t == 'undefined' ) {
-            console.log( "Attmepted to add edge between two ids who does not exist." );
+            console.log( "Attempted to add edge between two ids who does not exist." );
             return;
         }
         links.push({
             "source": s,
-                "target": t,
-                "value": value
+            "target": t,
+            "value": value
         });
         update();
+    };
+    
+    this.setNodeName = function(id, name) {
+        var i = findNodeIndex(id);
+        if ( typeof i == 'undefined' ) {
+            console.log( "Attempted to set name of nonexisting node." );
+            return;
+        }
+        nodes[i].name = name;
+        
+        vis.selectAll("g.node")
+        .data(nodes, function (d) {
+            return d.id;
+        })
+        .select("text")
+        .text(function (d) {
+            return d.name;
+        });
     };
 
     var findNode = function (id) {
@@ -90,7 +109,7 @@ function Graph(el) {
 
     var force = d3.layout.force()
           .charge( -600 )
-          .linkDistance( 30 )
+          .linkDistance( -20 )
           .size([width, height]);
 
     var nodes = force.nodes(),
@@ -102,32 +121,40 @@ function Graph(el) {
 
         var link = vis.selectAll("line")
             .data(links, function (d) {
-            return d.source.id + "-" + d.target.id;
-        });
+                return d.source.id + "-" + d.target.id;
+            });
         link.enter().append("line")
             .attr("id", function (d) {
-            return d.source.id + "-" + d.target.id;
-        })
+                return d.source.id + "-" + d.target.id;
+            })
             .style( "stroke-width", 2 )
             .attr("class", "link");
 
         link.append("title")
             .text(function (d) {
-            return d.value;
-        });
+                return d.value;
+            });
         link.exit().remove();
 
 
         var node = vis.selectAll("g.node")
             .data(nodes, function (d) {
-            return d.id;
-        });
+                return d.id;
+            });
+        
+        // Update text element
+        /*
+        var node_text = node.select("text")
+            .text(function (d) {
+                return d.name;
+            });
+        */
 
         var nodeEnter = node.enter().append("g")
             .attr("class", "node")
             .call(force.drag);
         nodeEnter.append("svg:circle")
-            .attr("r", 10)
+            .attr("r", 5)
             .attr("class", "nodeStrokeClass")
             .style( "fill", function(d) {
                 return color(d.id);
@@ -135,15 +162,15 @@ function Graph(el) {
             .attr("id", function (d) {
                 return "Node;" + d.id;
             });
-
-            /*
-        // Add id to node?
+        
+        // Enter text element
         nodeEnter.append("svg:text")
-            .attr("class", "textClass")
+            .attr("class", "nodeText")
+            .attr("dx", 12)
+            .attr("dy", ".3em")
             .text(function (d) {
-            return d.id;
-        });
-        */
+                return d.name;
+            });
 
         node.exit()
             .transition()
@@ -191,7 +218,7 @@ function Graph(el) {
                 for(var i in json.nodes) {
                     var n = json.nodes[i];
                     //g.addNode( createNodeMap( n.id, n.name, n.group, n.size ) );
-                    graph.addNode( n.id );
+                    graph.addNode( n.id, JSON.parse(n.name) );
                 }
                 for (var j in json.edges) {
                     var e = json.edges[j];
@@ -201,7 +228,7 @@ function Graph(el) {
             }
             if(message.command == "\"AddNode\""){
                 //graph.addNode( createNodeMap( message.id, message.name, 0, message.size ) );
-                graph.addNode( message.id );
+                graph.addNode( message.id, JSON.parse(message.name) );
             }
             if(message.command == "\"AddEdge\""){
                 //graph.addLink( createEdgeMap( message.source, message.target, message.id, message.weight ) );
@@ -215,6 +242,9 @@ function Graph(el) {
                 target = '' + message.target;
                 id = '' + message.id;
                 graph.removeLink( source, target );
+            }
+            if (message.command == "\"SetNodeName\"") {
+                graph.setNodeName( message.id, JSON.parse(message.name) );
             }
         }
 

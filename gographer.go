@@ -127,6 +127,14 @@ func (g *Graph) RemoveEdge(from, to, id int) {
 	}
 }
 
+func (g *Graph) RenameNode(nodeId int, name string) {
+	stringIdentifier := fmt.Sprintf("%d", nodeId)
+	if node, exists := g.Nodes[stringIdentifier]; exists {
+		node.Name = name
+		g.BroadcastRenameNode(*node)
+	}
+}
+
 func (g *Graph) GetNumberOfNodes() (numberOfNodes int) {
 
 	return len(g.Nodes)

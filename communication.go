@@ -104,3 +104,19 @@ func (g *Graph) BroadcastRemoveEdge(e Edge) {
 
 	g.wc.SendBytes(encoded)
 }
+
+func (g *Graph) BroadcastRenameNode(n Node) {
+	msg := SetNodeNameMessage {
+		Command: "SetNodeName",
+		Id:      n.Id,
+		Name:    n.Name,
+	}
+
+	encoded, err := json.Marshal(msg)
+
+	if err != nil {
+		log.Panic("Marshaling went oh so bad: ", err)
+	}
+
+	g.wc.SendBytes(encoded)
+}
