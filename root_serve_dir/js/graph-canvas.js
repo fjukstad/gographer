@@ -62,7 +62,8 @@ function Graph(el) {
         });
         update();
     };
-    
+
+    // Does not work with canvas
     this.setNodeName = function(id, name) {
         var i = findNodeIndex(id);
         if ( typeof i == 'undefined' ) {
@@ -103,6 +104,9 @@ function Graph(el) {
                     .attr("width", width)
                     .attr("height", height); 
 
+    canvas.node().addEventListener("mousemove", mousemove); 
+    canvas.node().addEventListener("mousedown", mousedown); 
+    canvas.node().addEventListener("mouseup", mouseup); 
 
     var force = d3.layout.force()
           .charge( -200 )
@@ -124,11 +128,10 @@ function Graph(el) {
             
             context.beginPath;
             context.strokeStyle = "#ccc";
-            
+            c = []
             links.forEach(function(d){
                 context.moveTo(d.source.x, d.source.y);
                 context.lineTo(d.target.x, d.target.y); 
-                
             }); 
                 context.stroke(); 
 
@@ -154,12 +157,55 @@ function Graph(el) {
 
     // Make it all go
     update();
+
+    isDrag = false
+
+
+    function mousemove(e){
+        if(isDrag) {
+            console.log("DRAGGING MOUSE"); 
+        }
+    }
+
+    function mousedown(e){
+        isDrag = true
+        console.log("MOUSE DOWN AT: ", e); 
+        for (var i in nodes) {
+            offset = 5;
+            n = nodes[i];
+            // x-axis
+            if( n.x - offset < e.x){
+                if(e.x < n.x + offset){
+                    // y-axis
+                    console.log("hit on x-axis"); 
+                    console.log(n.y, e.y); 
+                    if (n.y - offset < e.y){
+                        if(e.y < n.y + offset) {
+                            console.log("HIT:", n);
+                        }
+                    }
+                }
+            }
+
+
+        }
+    }
+
+    function mouseup(e){
+        console.log("STOPPED DRAG!"); 
+        isDrag = false;
+    }
+
+
+
 }
 
 (function($) {
     var graph;
     var websocketUrl = "ws://" + window.location.hostname + ":3999/ws"
     var socket; 
+    
+
     function initWebSocket(){
 
         socket = new WebSocket(websocketUrl);
@@ -206,7 +252,6 @@ function Graph(el) {
 
     }
 
-
     var createEdgeMap = function( sourceID, targetID, id, weight ) {
         return { "NodeIDSource": sourceID, "NodeIDTarget": targetID, "EdgeID": id, "Weight": weight };
     }
@@ -220,3 +265,6 @@ function Graph(el) {
         initWebSocket();
     });
 })(jQuery);
+
+
+
