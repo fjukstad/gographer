@@ -96,7 +96,7 @@ function Graph(el) {
     };
 
     var color = d3.scale.category20();
-    var width = 500,
+    var width = 700,
         height = 500; 
 
     var canvas = d3.select("body").append("canvas")
@@ -105,7 +105,7 @@ function Graph(el) {
 
 
     var force = d3.layout.force()
-          .charge( -600 )
+          .charge( -200 )
           .linkDistance( -20 )
           .size([width, height]);
 
@@ -116,7 +116,6 @@ function Graph(el) {
     var context = canvas.node().getContext("2d");
 
     var update = function () {
-        console.log("dicks");
 
         force.nodes(nodes).on("tick", tick).start(); 
         
@@ -124,8 +123,8 @@ function Graph(el) {
             context.clearRect(0,0,width,height); 
             
             context.beginPath;
-            context.strokeStyle = "steelblue";
-
+            context.strokeStyle = "#ccc";
+            
             links.forEach(function(d){
                 context.moveTo(d.source.x, d.source.y);
                 context.lineTo(d.target.x, d.target.y); 
@@ -133,11 +132,10 @@ function Graph(el) {
 
             context.stroke(); 
 
-            context.fillStyle = "steelblue";
             context.beginPath();
-            nodes.forEach(function(d) {
-              context.moveTo(d.x, d.y);
-              context.arc(d.x, d.y, 4.5, 0, 2 * Math.PI);
+            nodes.forEach(function(d,i) {
+                context.fillStyle = color(d);
+                context.arc(d.x, d.y, 4.5, 0, 2 * Math.PI);
             });
             context.fill();
 
@@ -181,7 +179,6 @@ function Graph(el) {
                 graph.addNode( message.id, JSON.parse(message.name) );
             }
             if(message.command == "\"AddEdge\""){
-                //graph.addLink( createEdgeMap( message.source, message.target, message.id, message.weight ) );
                 graph.addLink( message.source, message.target, message.weight );
             }
             if (message.command == "\"RemoveNode\"") {
