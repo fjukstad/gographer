@@ -1,17 +1,13 @@
 # gographer
 
-Simple graph package for go.
-
-# Wtf
-
-- _gographer.go_ contains source code to get started with a graph library
-- _visualizer.go_ contains source code to host the visualizations
-- _index.html_ contains the visualization code itself
-- _graph.json_ contains the output from gographer.go (graph).
+Simple graph package for go. Uses [d3js](https://github.com/mbostock/d3) for visualization and websockets for communication.
 
 
-# Run the rest visualization:
+# Run the test visualization
+
     go run test_graph/visualization.go
+    
+and visit [localhost:8080](http://localhost:8080) in your browser 
 
 # Using it
 Import it:
@@ -38,3 +34,11 @@ Open [localhost:8080](http://localhost:8080) in a webbrowser to view the graph. 
 Modify the d3js implementation and visualization to your preferences.
 
 
+# Files
+
+- _gographer.go_ contains source code to get started with a graph library
+- _visualizer.go_ contains source code to host the visualizations
+- _root_serve_dir/index.html_ contains the empty shell for the visualization
+- _root_serve_dir/js/_ contains source code for the visualization
+- _root_serve_dir/css/_ contains css files for visualization
+- _graph.json_ contains the output from gographer.go (graph).
