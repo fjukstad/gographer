@@ -123,6 +123,7 @@ function Graph(el) {
             .data(links, function (d) {
                 return d.source.id + "-" + d.target.id;
             });
+        numedges = 0; 
         link.enter().append("line")
             .attr("id", function (d) {
                 return d.source.id + "-" + d.target.id;
@@ -130,6 +131,7 @@ function Graph(el) {
             .style( "stroke-width", 2 )
             .attr("class", "link");
 
+        console.log("We have",links.length ,"edges"); 
         link.append("title")
             .text(function (d) {
                 return d.value;

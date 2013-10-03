@@ -126,14 +126,14 @@ function Graph(el) {
         function tick() {
             context.clearRect(0,0,width,height); 
             
-            context.beginPath;
+            context.beginPath();
             context.strokeStyle = "#ccc";
-            c = []
-            links.forEach(function(d){
+
+            links.forEach(function(d,i){
                 context.moveTo(d.source.x, d.source.y);
                 context.lineTo(d.target.x, d.target.y); 
             }); 
-                context.stroke(); 
+            context.stroke(); 
 
             
             context.beginPath();
