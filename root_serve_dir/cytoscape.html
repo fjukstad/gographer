@@ -2,16 +2,18 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <link rel="stylesheet" type="text/css" href="css/graph.css"/>
-    <script type="text/javascript" src=""></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/graph-cytoscape.css"/>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
+    <!--<script type="text/javascript"
+        src="http://cytoscape.github.io/cytoscape.js/js/arbor.js"></script>-->
     <script src="js/graph-cytoscape.js"></script>
   </head>
   <body>
     <h1>Graph Visualizer</h1>
     <h5>Dynamic updates through websocket</h5>
     <h5> Visualization using cytoscape </h5>
-    <div id="svgdiv"></div>
+    <div id="cy"></div>
   </body>
 </html>
 
