@@ -33,7 +33,7 @@ Using it:
     http.ListenAndServe( ":8080", http.FileServer( http.Dir( "." ) ) )
 
 
-Open localhost:8080 in a webbrowser to se the graph.
+Open [localhost:8080](http://localhost:8080) in a webbrowser to view the graph. Have a look at [localhost:8080/canvas.html](http://localhost:8080/canvas.html) for the visualization using the HTML canvas element for rendering. 
 
 Modify the d3js implementation and visualization to your preferences.
 

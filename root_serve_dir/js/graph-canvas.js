@@ -97,8 +97,8 @@ function Graph(el) {
     };
 
     var color = d3.scale.category20();
-    var width = 700,
-        height = 500; 
+    var width = 1200,
+        height = 800;
 
     var canvas = d3.select("body").append("canvas")
                     .attr("width", width)
@@ -128,14 +128,15 @@ function Graph(el) {
             
             context.beginPath();
             context.strokeStyle = "#ccc";
-
+            
+            // Draw edges
             links.forEach(function(d,i){
                 context.moveTo(d.source.x, d.source.y);
                 context.lineTo(d.target.x, d.target.y); 
             }); 
             context.stroke(); 
 
-            
+            // Draw nodes
             context.beginPath();
             nodes.forEach(function(d,i) {
                 context.fillStyle = color(d);
