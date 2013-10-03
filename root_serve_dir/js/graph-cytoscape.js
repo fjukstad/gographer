@@ -1,9 +1,10 @@
 $(loadCy = function(){
     options = {
         layout: {
-            name: 'arbor', 
+            name: 'random', 
             gravity: true,
-            liveUpdate: true
+            liveUpdate: true,
+            maxSimulationtime: 100000,
         },
         showOverlay: false,
         minZoom: 0.5,
@@ -11,11 +12,15 @@ $(loadCy = function(){
         style: cytoscape.stylesheet()
             .selector('node')
             .css({
-                'content': 'data(name)',
+                'content': 'data(id)',
                 'text-valign': 'center',
-                'color': 'white',
-                'text-outline-width': 2,
-                'text-outline-color': '#888'
+                'color': ,
+                'background-color': 'steelblue',
+                'text-outline-width': 0,
+                'text-outline-color': '#888',
+                'text-opacity': 0,
+                'height': 10,
+                'width': 10, 
             })
             .selector('edge')
             .css({
@@ -35,10 +40,11 @@ $(loadCy = function(){
         ready: function(){
             cy = this;
             console.log("ready");
-            setInterval(function(){
+            numNodes = 200;
+            for (i = 0; i < numNodes; i++){
                 var first = Math.round(Math.random() * 200);
                 var second = Math.round(Math.random() * 200);
-
+                var third = Math.round(Math.random() * 200);
                 console.log("new from:",first,"to",second); 
 
                 var eles = cy.add([
@@ -46,10 +52,18 @@ $(loadCy = function(){
                   { group: "nodes", data: { id: "n"+second }, position: { x: second, y: first } },
                   { group: "edges", data: { source: "n"+first, target: "n"+second } }
                 ]);
-            }, 3000); 
+
+            }   
+            cy.layout();
+            
+            
         }
     }; 
 
 
     $('#cy').cytoscape(options); 
 });
+
+
+    var color = d3.scale.category20();
+
