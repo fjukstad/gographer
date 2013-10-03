@@ -26,8 +26,6 @@ function Graph(cy){
         };
 
         nodes.push(no);
-        //cy.add(nodes): 
-       // update(); 
     };
 
     this.addEdge = function(e){
@@ -50,7 +48,6 @@ function Graph(cy){
 
         edges.push(ed); 
         cy.add(ed); 
-
 
     }
 
@@ -128,7 +125,6 @@ $(loadCy = function(){
                         var n = json.nodes[i]; 
                         graph.addNode(n); 
                     }
-                    cy.layout();
                     var cy_nodes = cy.add(nodes); 
                     console.log("added nodes");
                     for(var j in json.edges){
@@ -136,6 +132,11 @@ $(loadCy = function(){
                         graph.addEdge(e); 
                                                 //graph.push(ed); 
                     }
+                    cy.layout();
+                }
+
+                if(message.command == "\"AddNode\""){
+                    graph.addNode(message); 
                     cy.layout();
                 }
             } 
