@@ -1,10 +1,9 @@
 # gographer
 
-Simple graph package for go. Makes it easy to create simple graphs and visualizing them using [d3js](https://github.com/mbostock/d3). 
-[gographer](https://github.com/fjukstad/gographer/) uses websockets for communication between web browser and backend. 
+Simple graph package for go. Uses [d3js](https://github.com/mbostock/d3) for visualization and websockets for communication.
 
 
-# Run the test visualization:
+# Run the test visualization
 
     go run test_graph/visualization.go
     
