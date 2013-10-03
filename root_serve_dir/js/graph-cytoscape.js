@@ -1,3 +1,13 @@
+var nodes = [];
+var edges = [];
+var graph = []; 
+
+
+function Graph(el){
+
+    
+
+}
 $(loadCy = function(){
     options = {
         layout: {
@@ -14,13 +24,12 @@ $(loadCy = function(){
             .css({
                 'content': 'data(id)',
                 'text-valign': 'center',
-                'color': ,
                 'background-color': 'steelblue',
                 'text-outline-width': 0,
                 'text-outline-color': '#888',
                 'text-opacity': 0,
-                'height': 10,
-                'width': 10, 
+                'height': 20,
+                'width': 20, 
             })
             .selector('edge')
             .css({
@@ -37,24 +46,64 @@ $(loadCy = function(){
                 { data: {source: 'w', target: 'w'} }
             ]
         },
+
         ready: function(){
             cy = this;
             console.log("ready");
-            numNodes = 200;
-            for (i = 0; i < numNodes; i++){
-                var first = Math.round(Math.random() * 200);
-                var second = Math.round(Math.random() * 200);
-                var third = Math.round(Math.random() * 200);
-                console.log("new from:",first,"to",second); 
-
-                var eles = cy.add([
-                  { group: "nodes", data: { id: "n"+first }, position: { x: first, y: second } },
-                  { group: "nodes", data: { id: "n"+second }, position: { x: second, y: first } },
-                  { group: "edges", data: { source: "n"+first, target: "n"+second } }
-                ]);
-
-            }   
-            cy.layout();
+            
+            // Load data from JSON 
+            var url = "ws://"+window.location.hostname+":3999/ws";
+            var socket = new WebSocket(url); 
+            socket.onmessage = function(m){
+                var message = JSON.parse(m.data); 
+                if(message.command == "\"InitGraph\""){
+                    
+                    json = JSON.parse(JSON.parse(message.graph)); 
+                    var graph = [];
+                    var numAdded = 0; 
+                    console.log(json.nodes);
+                    
+                    for(var i in json.nodes){
+                        var n = json.nodes[i]; 
+                        var no = {
+                            group: 'nodes',
+                            data: { 
+                                id: ''+ n.id,
+                                name: JSON.parse(n.name),
+                                weight: 10,
+                                height: 10,
+                            },
+                            position: {
+                                x: Math.random() * 100,
+                                y: Math.random() * 100
+                            }
+                        };
+                        nodes.push(no);
+                    }
+                    cy.layout();
+                    var cy_nodes = cy.add(nodes); 
+                    console.log("added nodes");
+                    graph = [];
+                    for(var j in json.edges){
+                        var e = json.edges[j]; 
+                        var ed = {
+                            group: "edges",
+                            data: {
+                                source: ''+e.source,
+                                target: ''+e.target,
+                                //weight: e.weight,
+                            },
+                        };
+                        console.log(json.edges[j]);
+                        cy.add(ed); 
+                        //graph.push(ed); 
+                    }
+                    cy.layout();
+                    console.log(graph.length,graph);
+                    //var edges = cy.add(graph); 
+                    //console.log(edges);
+                }
+            } 
             
             
         }
