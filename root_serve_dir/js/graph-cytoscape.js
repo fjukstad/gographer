@@ -1,11 +1,72 @@
 var nodes = [];
 var edges = [];
-var graph = []; 
+var graph;
 
 
-function Graph(el){
+function Graph(cy){
+    this.addNode = function(n){
+        
+        if(typeof findNode(n.id) != 'undefined') {
+            console.log("attempted to add node (",n,") which exists.."); 
+            return
+        }
+
+        var no = {
+            group: 'nodes',
+            data: { 
+                id: ''+ n.id,
+                name: JSON.parse(n.name),
+                weight: 10,
+                height: 10,
+            },
+            position: {
+                x: Math.random() * 100,
+                y: Math.random() * 100
+            }
+        };
+
+        nodes.push(no);
+        //cy.add(nodes): 
+       // update(); 
+    };
+
+    this.addEdge = function(e){
+        var s = findNode(e.source); 
+        var t = findNode(e.target); 
+        
+        if(typeof s == 'undefined' || typeof t == 'undefined'){
+            console.log("Attempted to add a faulty edge"); 
+            return
+        }
+
+        var ed = {
+            group: "edges",
+            data: {
+                source: ''+e.source,
+                target: ''+e.target,
+                //weight: e.weight,
+            },
+        }; 
+
+        edges.push(ed); 
+        cy.add(ed); 
+
+
+    }
+
+    var findNode = function (id) {
+        for (var i in nodes) {
+            if (nodes[i]["data"]["id"] === ''+id) {
+                return nodes[i];
+            }
+        };
+    };
+
 
     
+    var update = function() {
+        cy.layout(); 
+    }
 
 }
 $(loadCy = function(){
@@ -50,6 +111,7 @@ $(loadCy = function(){
         ready: function(){
             cy = this;
             console.log("ready");
+            graph = new Graph(cy); 
             
             // Load data from JSON 
             var url = "ws://"+window.location.hostname+":3999/ws";
@@ -59,49 +121,22 @@ $(loadCy = function(){
                 if(message.command == "\"InitGraph\""){
                     
                     json = JSON.parse(JSON.parse(message.graph)); 
-                    var graph = [];
                     var numAdded = 0; 
                     console.log(json.nodes);
                     
                     for(var i in json.nodes){
                         var n = json.nodes[i]; 
-                        var no = {
-                            group: 'nodes',
-                            data: { 
-                                id: ''+ n.id,
-                                name: JSON.parse(n.name),
-                                weight: 10,
-                                height: 10,
-                            },
-                            position: {
-                                x: Math.random() * 100,
-                                y: Math.random() * 100
-                            }
-                        };
-                        nodes.push(no);
+                        graph.addNode(n); 
                     }
                     cy.layout();
                     var cy_nodes = cy.add(nodes); 
                     console.log("added nodes");
-                    graph = [];
                     for(var j in json.edges){
                         var e = json.edges[j]; 
-                        var ed = {
-                            group: "edges",
-                            data: {
-                                source: ''+e.source,
-                                target: ''+e.target,
-                                //weight: e.weight,
-                            },
-                        };
-                        console.log(json.edges[j]);
-                        cy.add(ed); 
-                        //graph.push(ed); 
+                        graph.addEdge(e); 
+                                                //graph.push(ed); 
                     }
                     cy.layout();
-                    console.log(graph.length,graph);
-                    //var edges = cy.add(graph); 
-                    //console.log(edges);
                 }
             } 
             
