@@ -97,15 +97,7 @@ $(loadCy = function(){
         elements : {
             
             nodes: [],
-            /*
-                { data: {id: 'h', name: 'Hello', weight: 10, height: 40 } },
-                { data: {id: 'w', name: 'World', weight: 30, height: 70} }
-            ],
-            */
-            edges : [
-                { data: {source: 'h', target: 'w'} },
-                { data: {source: 'w', target: 'w'} }
-            ]
+            edges : []
         },
 
         ready: function(){
