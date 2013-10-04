@@ -7,7 +7,7 @@ function Graph(cy){
     this.addNode = function(n){
         
         if(typeof findNode(n.id) != 'undefined') {
-            console.log("attempted to add node (",n,") which exists.."); 
+            console.log("attempted to add node (",n.id,") which exists.."); 
             return
         }
 
@@ -80,12 +80,13 @@ $(loadCy = function(){
         style: cytoscape.stylesheet()
             .selector('node')
             .css({
-                'content': 'data(id)',
-                'text-valign': 'center',
+                'content': 'data(name)',
+                'text-valign': 'right',
                 'background-color': 'steelblue',
                 'text-outline-width': 0,
-                'text-outline-color': '#888',
-                'text-opacity': 0,
+                'text-outline-color': '#ccc',
+                'text-opacity': 0.5,
+                'text-color': '#ccc',
                 'height': 20,
                 'width': 20, 
             })
@@ -95,10 +96,12 @@ $(loadCy = function(){
         }),
         elements : {
             
-            nodes: [
+            nodes: [],
+            /*
                 { data: {id: 'h', name: 'Hello', weight: 10, height: 40 } },
                 { data: {id: 'w', name: 'World', weight: 30, height: 70} }
             ],
+            */
             edges : [
                 { data: {source: 'h', target: 'w'} },
                 { data: {source: 'w', target: 'w'} }
@@ -126,7 +129,6 @@ $(loadCy = function(){
                         graph.addNode(n); 
                     }
                     var cy_nodes = cy.add(nodes); 
-                    console.log("added nodes");
                     for(var j in json.edges){
                         var e = json.edges[j]; 
                         graph.addEdge(e); 
