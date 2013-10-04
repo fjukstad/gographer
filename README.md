@@ -1,6 +1,6 @@
 # gographer
 
-Simple graph package for go. Uses [d3js](https://github.com/mbostock/d3) for visualization and websockets for communication.
+Simple graph package for go. Uses [d3js](https://github.com/mbostock/d3) for visualization and websockets for communication. 
 
 
 # Run the test visualization
@@ -29,7 +29,12 @@ Using it:
     http.ListenAndServe( ":8080", http.FileServer( http.Dir( "." ) ) )
 
 
-Open [localhost:8080](http://localhost:8080) in a webbrowser to view the graph. Have a look at [localhost:8080/canvas.html](http://localhost:8080/canvas.html) for the visualization using the HTML canvas element for rendering. 
+Open [localhost:8080](http://localhost:8080) in a webbrowser to view the graph.
+Have a look at [localhost:8080/canvas.html](http://localhost:8080/canvas.html)
+for the visualization using the HTML canvas element for rendering.
+Visit [localhost:8080/cytoscape.html](http://localhost:8080/cytoscape.html) for
+a visualization using the
+[cytoscape.js](http://cytoscape.github.io/cytoscape.js) library. 
 
 Modify the d3js implementation and visualization to your preferences.
 
