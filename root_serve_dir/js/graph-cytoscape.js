@@ -26,6 +26,7 @@ function Graph(cy){
         };
 
         nodes.push(no);
+        cy.add(no); 
     };
 
     this.addEdge = function(e){
@@ -75,7 +76,7 @@ $(loadCy = function(){
             maxSimulationtime: 100000,
         },
         showOverlay: false,
-        minZoom: 0.5,
+        minZoom: 0.05,
         maxZoom: 2,
         style: cytoscape.stylesheet()
             .selector('node')
@@ -87,8 +88,8 @@ $(loadCy = function(){
                 'text-outline-color': '#ccc',
                 'text-opacity': 0.5,
                 'text-color': '#ccc',
-                'height': 20,
-                'width': 20, 
+                'height': 10,
+                'width': 10, 
             })
             .selector('edge')
             .css({
