@@ -43,7 +43,6 @@ function Graph(cy){
             data: {
                 source: ''+e.source,
                 target: ''+e.target,
-                //weight: e.weight,
             },
         }; 
 
@@ -71,12 +70,13 @@ $(loadCy = function(){
     options = {
         layout: {
             name: 'random', 
-            gravity: true,
+           // gravity: true,
             liveUpdate: true,
-            maxSimulationtime: 100000,
+            maxSimulationtime: 1000,
         },
+        
         showOverlay: false,
-        minZoom: 0.05,
+        minZoom: 0.5,
         maxZoom: 2,
         style: cytoscape.stylesheet()
             .selector('node')
@@ -121,6 +121,7 @@ $(loadCy = function(){
                         var n = json.nodes[i]; 
                         graph.addNode(n); 
                     }
+                    //cy.layout(); 
                     var cy_nodes = cy.add(nodes); 
                     for(var j in json.edges){
                         var e = json.edges[j]; 

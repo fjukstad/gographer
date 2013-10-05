@@ -35,6 +35,7 @@ type Edge struct {
 	Weight           int `json:"weight, int"`
 }
 
+
 /* This is invoked first for all new connections.
  * Output current graph state before giving out updates
  */
