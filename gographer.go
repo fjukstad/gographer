@@ -84,6 +84,31 @@ func New() *Graph {
 	return graph
 }
 
+// The functionality of starting wsserver on specified port 
+func NewGraphAt(port string) *Graph {
+    graph := new(Graph)
+    
+    nodes := make(map[string]*Node)
+    edges := make(map[string]*Edge)
+    
+    wsserver := gowebsocket.New("",port)
+    wsserver.SetConnectionHandler(graph)
+    wsserver.Start()
+
+    wsclient, err := gowebsocket.NewClient("localhost", port)
+    if err != nil{
+        /* TODO: Same as above */ 
+    }
+
+    graph.Nodes = nodes
+    graph.Edges = edges
+    graph.wss = wsserver
+    graph.wc = wsclient
+
+    return graph
+}
+
+
 // Node is uniquely identified by id
 func (g *Graph) AddNode(id int, name string, group int, size int) {
 
