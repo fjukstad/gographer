@@ -50,6 +50,8 @@ func (g *Graph) Handler(conn *websocket.Conn) {
 		Graph:   string(b),
 	}
 
+    log.Print("Init you say:", msg); 
+
 	encoded, err := json.Marshal(msg)
 	if err != nil {
 		log.Panic("Marshaling went oh so bad: ", err)
@@ -106,6 +108,10 @@ func NewGraphAt(port string) *Graph {
     graph.wc = wsclient
 
     return graph
+}
+
+func (g *Graph) ServerInfo() string {
+    return g.wss.GetServerInfo()
 }
 
 
