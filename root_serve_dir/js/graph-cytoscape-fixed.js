@@ -21,9 +21,8 @@ function Graph(cy){
             },
             position: {
                 x: n.graphics.x,
-                y: n.graphics.y,
+                y: n.graphics.y
             }
-
         };
 
         nodes.push(no);
@@ -69,16 +68,18 @@ function Graph(cy){
 }
 $(loadCy = function(){
     options = {
+        
         layout: {
-            name: 'random', 
+            name: 'preset', 
            // gravity: true,
             liveUpdate: true,
             maxSimulationtime: 1000,
         },
         
+        
         showOverlay: false,
-        minZoom: 0.5,
-        maxZoom: 2,
+        minZoom: 0.05,
+        maxZoom: 20,
         style: cytoscape.stylesheet()
             .selector('node')
             
@@ -91,9 +92,10 @@ $(loadCy = function(){
                 'text-opacity': 0.5,
                 'text-color': '#ccc',
                 'shape': 'data(graphics.shape)',
-                //'height': 'data(graphics.height)',
-                //'width': 'data(graphics.width)', 
+                'height': 'data(graphics.height)',
+                'width': 'data(graphics.width)', 
             })
+
             .selector('edge')
             .css({
                 'target-arrow-shape': 'triangle'

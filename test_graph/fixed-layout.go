@@ -28,8 +28,8 @@ func main(){
         shape := randomShape()
         x := rand.Intn(500)
         y := rand.Intn(500)
-        height := rand.Intn(50)
-        width := rand.Intn(70)
+        height := 50// rand.Intn(50)
+        width := 50//rand.Intn(50)
 
         typ := randomType()
         name := randomName()
