@@ -37,22 +37,6 @@ type Edge struct {
     Graphics         EdgeGraphics `json:"graphics, omitempty"`
 }
 
-type NodeGraphics struct {
-    Name        string `json:"name, string"`
-    FGColor     string `json:"fgcolor, string"`
-    BGColor     string `json:"bgcolor, string"`
-    Shape       string `json:"shape, string"`
-    X           int    `json:"x, int"`
-    Y           int    `json:"y, int"`
-    Height      int    `json:"height, int"`
-    Width       int    `json:"widht, int"`
-}
-
-type EdgeGraphics struct {
-    Type    string `json:"type, string"`
-    Name    string `json:"name, string"`
-    Value   string `json:"value, string"`
-}
 
 
 /* This is invoked first for all new connections.
@@ -80,29 +64,9 @@ func (g *Graph) Handler(conn *websocket.Conn) {
 }
 
 func New() *Graph {
-	var graph *Graph = new(Graph)
-
-	nodes := make(map[string]*Node)
-	edges := make(map[string]*Edge)
 
 	port := ":3999"
-
-	// Listen on all IP addresses
-	wsserver := gowebsocket.New("", port)
-	wsserver.SetConnectionHandler(graph)
-	wsserver.Start()
-
-	wsclient, err := gowebsocket.NewClient("localhost", port)
-	if err != nil {
-		/* TODO: Notify that websockets are disabled */
-	}
-
-	graph.Nodes = nodes
-	graph.Edges = edges
-	graph.wss = wsserver
-	graph.wc = wsclient
-
-	return graph
+    return NewGraphAt(port)
 }
 
 // The functionality of starting wsserver on specified port 
@@ -148,6 +112,7 @@ func (g *Graph) AddNode(id int, name string, group int, size int) {
 		g.BroadcastAddNode(*n)
 	}
 }
+
 func (g *Graph) RemoveNode(nodeId int) {
 	stringIdentifier := fmt.Sprintf("%d", nodeId)
 	if node, exists := g.Nodes[stringIdentifier]; exists {
