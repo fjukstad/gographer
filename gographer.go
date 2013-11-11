@@ -38,7 +38,6 @@ type Edge struct {
 }
 
 
-
 /* This is invoked first for all new connections.
  * Output current graph state before giving out updates
  */
@@ -156,7 +155,6 @@ func (g *Graph) RenameNode(nodeId int, name string) {
 }
 
 func (g *Graph) GetNumberOfNodes() (numberOfNodes int) {
-
 	return len(g.Nodes)
 }
 
