@@ -25,6 +25,7 @@ type Node struct {
 	Name             string `json:"name,string"`
 	Group            string `json:"group,string"`
 	Size             int    `json:"size,int"`
+    Graphics         NodeGraphics `json:"graphics, omitempty"`
 }
 
 type Edge struct {
@@ -33,6 +34,7 @@ type Edge struct {
 	Target           int `json:"target, int"`
 	Id               int `json:"id, int"`
 	Weight           int `json:"weight, int"`
+    Graphics         EdgeGraphics `json:"graphics, omitempty"`
 }
 
 
@@ -50,8 +52,6 @@ func (g *Graph) Handler(conn *websocket.Conn) {
 		Graph:   string(b),
 	}
 
-    log.Print("Init you say:", msg); 
-
 	encoded, err := json.Marshal(msg)
 	if err != nil {
 		log.Panic("Marshaling went oh so bad: ", err)
@@ -61,29 +61,9 @@ func (g *Graph) Handler(conn *websocket.Conn) {
 }
 
 func New() *Graph {
-	var graph *Graph = new(Graph)
-
-	nodes := make(map[string]*Node)
-	edges := make(map[string]*Edge)
 
 	port := ":3999"
-
-	// Listen on all IP addresses
-	wsserver := gowebsocket.New("", port)
-	wsserver.SetConnectionHandler(graph)
-	wsserver.Start()
-
-	wsclient, err := gowebsocket.NewClient("localhost", port)
-	if err != nil {
-		/* TODO: Notify that websockets are disabled */
-	}
-
-	graph.Nodes = nodes
-	graph.Edges = edges
-	graph.wss = wsserver
-	graph.wc = wsclient
-
-	return graph
+    return NewGraphAt(port)
 }
 
 // The functionality of starting wsserver on specified port 
@@ -117,9 +97,9 @@ func (g *Graph) ServerInfo() string {
 
 // Node is uniquely identified by id
 func (g *Graph) AddNode(id int, name string, group int, size int) {
-
+    var graphics NodeGraphics
 	n := &Node{Id: id, Name: name, Group: "group " + strconv.Itoa(group),
-		Size: size}
+        Size: size, Graphics: graphics}
 
 	n.stringIdentifier = fmt.Sprintf("%d", id)
 
@@ -129,6 +109,7 @@ func (g *Graph) AddNode(id int, name string, group int, size int) {
 		g.BroadcastAddNode(*n)
 	}
 }
+
 func (g *Graph) RemoveNode(nodeId int) {
 	stringIdentifier := fmt.Sprintf("%d", nodeId)
 	if node, exists := g.Nodes[stringIdentifier]; exists {
@@ -141,7 +122,11 @@ func (g *Graph) RemoveNode(nodeId int) {
 // Add edge between Source and Target
 // Edge is uniquely identified by tuple (source, target, id)
 func (g *Graph) AddEdge(from, to, id, weight int) {
-	e := &Edge{Source: from, Target: to, Id: id, Weight: weight}
+    var graphics EdgeGraphics
+
+    e := &Edge{Source: from, Target: to, Id: id, Weight: weight, Graphics:
+        graphics}
+
 	e.stringIdentifier = fmt.Sprintf("%d-%d:%d", from, to, id)
 	e.Weight = 1
 
@@ -168,7 +153,6 @@ func (g *Graph) RenameNode(nodeId int, name string) {
 }
 
 func (g *Graph) GetNumberOfNodes() (numberOfNodes int) {
-
 	return len(g.Nodes)
 }
 
@@ -207,6 +191,5 @@ func (g *Graph) Visualize() {
 	rootServeDir := gopath + "/src/github.com/fjukstad/gographer/root_serve_dir/"
 	port := ":8080"
 	log.Println("Graph created, go visit at localhost"+port)
-
 	panic(http.ListenAndServe(port, http.FileServer(http.Dir( rootServeDir ))))
 }
