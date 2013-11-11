@@ -25,6 +25,7 @@ type Node struct {
 	Name             string `json:"name,string"`
 	Group            string `json:"group,string"`
 	Size             int    `json:"size,int"`
+    Graphics         NodeGraphics `json:"graphics, omitempty"`
 }
 
 type Edge struct {
@@ -33,6 +34,24 @@ type Edge struct {
 	Target           int `json:"target, int"`
 	Id               int `json:"id, int"`
 	Weight           int `json:"weight, int"`
+    Graphics         EdgeGraphics `json:"graphics, omitempty"`
+}
+
+type NodeGraphics struct {
+    Name        string `json:"name, string"`
+    FGColor     string `json:"fgcolor, string"`
+    BGColor     string `json:"bgcolor, string"`
+    Shape       string `json:"shape, string"`
+    X           int    `json:"x, int"`
+    Y           int    `json:"y, int"`
+    Height      int    `json:"height, int"`
+    Width       int    `json:"widht, int"`
+}
+
+type EdgeGraphics struct {
+    Type    string `json:"type, string"`
+    Name    string `json:"name, string"`
+    Value   string `json:"value, string"`
 }
 
 
@@ -117,9 +136,9 @@ func (g *Graph) ServerInfo() string {
 
 // Node is uniquely identified by id
 func (g *Graph) AddNode(id int, name string, group int, size int) {
-
+    var graphics NodeGraphics
 	n := &Node{Id: id, Name: name, Group: "group " + strconv.Itoa(group),
-		Size: size}
+        Size: size, Graphics: graphics}
 
 	n.stringIdentifier = fmt.Sprintf("%d", id)
 
@@ -141,7 +160,11 @@ func (g *Graph) RemoveNode(nodeId int) {
 // Add edge between Source and Target
 // Edge is uniquely identified by tuple (source, target, id)
 func (g *Graph) AddEdge(from, to, id, weight int) {
-	e := &Edge{Source: from, Target: to, Id: id, Weight: weight}
+    var graphics EdgeGraphics
+
+    e := &Edge{Source: from, Target: to, Id: id, Weight: weight, Graphics:
+        graphics}
+
 	e.stringIdentifier = fmt.Sprintf("%d-%d:%d", from, to, id)
 	e.Weight = 1
 
@@ -207,6 +230,5 @@ func (g *Graph) Visualize() {
 	rootServeDir := gopath + "/src/github.com/fjukstad/gographer/root_serve_dir/"
 	port := ":8080"
 	log.Println("Graph created, go visit at localhost"+port)
-
 	panic(http.ListenAndServe(port, http.FileServer(http.Dir( rootServeDir ))))
 }
