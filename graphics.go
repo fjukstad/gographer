@@ -6,7 +6,6 @@
 package gographer 
 
 import (
-    "log"
     "strconv"
     "fmt"
 )
@@ -20,7 +19,7 @@ type NodeGraphics struct {
     X           int    `json:"x, int"`
     Y           int    `json:"y, int"`
     Height      int    `json:"height, int"`
-    Width       int    `json:"widht, int"`
+    Width       int    `json:"width, int"`
 }
 
 type EdgeGraphics struct {
@@ -51,7 +50,6 @@ func (g *Graph) AddGraphicNode(id int, name string, group int, size int,
 
 
 func (g *Graph) AddGraphicEdge(from, to, id, weight int, typ, name, value string){
-    log.Print("hello")
 
     graphics := EdgeGraphics{typ,name,value}
 

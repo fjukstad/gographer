@@ -29,7 +29,7 @@ func main(){
         x := rand.Intn(500)
         y := rand.Intn(500)
         height := rand.Intn(50)
-        width := rand.Intn(50)
+        width := rand.Intn(70)
 
         typ := randomType()
         name := randomName()
@@ -55,7 +55,7 @@ func randomColor() string {
     b := rand.Intn(255)
     c := rand.Intn(255)
 
-    return fmt.Sprintf("#%x%x%x",a,b,c)
+    return fmt.Sprintf("#%02x%02x%02x",a,b,c)
 
 }
 
@@ -64,9 +64,9 @@ func randomShape() string {
     a := rand.Intn(3)
     switch a {
     case 0:
-        return "circle"
+        return "ellipse"
     case 1:
-        return "square"
+        return "rectangle"
     case 2: 
         return "triangle"
     default:
