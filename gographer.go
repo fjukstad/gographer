@@ -1,14 +1,15 @@
 package gographer
 
 import (
-	"code.google.com/p/go.net/websocket"
 	"encoding/json"
 	"fmt"
-	"github.com/fjukstad/gowebsocket"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
-	"net/http"
+
+	"github.com/fjukstad/gowebsocket"
+	"golang.org/x/net/websocket"
 )
 
 type Graph struct {
@@ -21,22 +22,21 @@ type Graph struct {
 
 type Node struct {
 	stringIdentifier string
-	Id               int    `json:"id,int"`
-	Name             string `json:"name,string"`
-	Group            string `json:"group,string"`
-	Size             int    `json:"size,int"`
-    Graphics         NodeGraphics `json:"graphics, omitempty"`
+	Id               int          `json:"id,int"`
+	Name             string       `json:"name,string"`
+	Group            string       `json:"group,string"`
+	Size             int          `json:"size,int"`
+	Graphics         NodeGraphics `json:"graphics, omitempty"`
 }
 
 type Edge struct {
 	stringIdentifier string
-	Source           int `json:"source, int"`
-	Target           int `json:"target, int"`
-	Id               int `json:"id, int"`
-	Weight           int `json:"weight, int"`
-    Graphics         EdgeGraphics `json:"graphics, omitempty"`
+	Source           int          `json:"source, int"`
+	Target           int          `json:"target, int"`
+	Id               int          `json:"id, int"`
+	Weight           int          `json:"weight, int"`
+	Graphics         EdgeGraphics `json:"graphics, omitempty"`
 }
-
 
 /* This is invoked first for all new connections.
  * Output current graph state before giving out updates
@@ -63,43 +63,42 @@ func (g *Graph) Handler(conn *websocket.Conn) {
 func New() *Graph {
 
 	port := ":3999"
-    return NewGraphAt(port)
+	return NewGraphAt(port)
 }
 
-// The functionality of starting wsserver on specified port 
+// The functionality of starting wsserver on specified port
 func NewGraphAt(port string) *Graph {
-    graph := new(Graph)
-    
-    nodes := make(map[string]*Node)
-    edges := make(map[string]*Edge)
-    
-    wsserver := gowebsocket.New("",port)
-    wsserver.SetConnectionHandler(graph)
-    wsserver.Start()
+	graph := new(Graph)
 
-    wsclient, err := gowebsocket.NewClient("localhost", port)
-    if err != nil{
-        /* TODO: Same as above */ 
-    }
+	nodes := make(map[string]*Node)
+	edges := make(map[string]*Edge)
 
-    graph.Nodes = nodes
-    graph.Edges = edges
-    graph.wss = wsserver
-    graph.wc = wsclient
+	wsserver := gowebsocket.New("", port)
+	wsserver.SetConnectionHandler(graph)
+	wsserver.Start()
 
-    return graph
+	wsclient, err := gowebsocket.NewClient("localhost", port)
+	if err != nil {
+		/* TODO: Same as above */
+	}
+
+	graph.Nodes = nodes
+	graph.Edges = edges
+	graph.wss = wsserver
+	graph.wc = wsclient
+
+	return graph
 }
 
 func (g *Graph) ServerInfo() string {
-    return g.wss.GetServerInfo()
+	return g.wss.GetServerInfo()
 }
-
 
 // Node is uniquely identified by id
 func (g *Graph) AddNode(id int, name string, group int, size int) {
-    var graphics NodeGraphics
+	var graphics NodeGraphics
 	n := &Node{Id: id, Name: name, Group: "group " + strconv.Itoa(group),
-        Size: size, Graphics: graphics}
+		Size: size, Graphics: graphics}
 
 	n.stringIdentifier = fmt.Sprintf("%d", id)
 
@@ -122,10 +121,9 @@ func (g *Graph) RemoveNode(nodeId int) {
 // Add edge between Source and Target
 // Edge is uniquely identified by tuple (source, target, id)
 func (g *Graph) AddEdge(from, to, id, weight int) {
-    var graphics EdgeGraphics
+	var graphics EdgeGraphics
 
-    e := &Edge{Source: from, Target: to, Id: id, Weight: weight, Graphics:
-        graphics}
+	e := &Edge{Source: from, Target: to, Id: id, Weight: weight, Graphics: graphics}
 
 	e.stringIdentifier = fmt.Sprintf("%d-%d:%d", from, to, id)
 	e.Weight = 1
@@ -185,11 +183,10 @@ func (g *Graph) DumpJSON(filename string) {
 
 }
 
-
 func (g *Graph) Visualize() {
-	gopath := os.Getenv( "GOPATH" );
+	gopath := os.Getenv("GOPATH")
 	rootServeDir := gopath + "/src/github.com/fjukstad/gographer/root_serve_dir/"
 	port := ":8080"
-	log.Println("Graph created, go visit at localhost"+port)
-	panic(http.ListenAndServe(port, http.FileServer(http.Dir( rootServeDir ))))
+	log.Println("Graph created, go visit at localhost" + port)
+	panic(http.ListenAndServe(port, http.FileServer(http.Dir(rootServeDir))))
 }

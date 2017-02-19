@@ -7,7 +7,7 @@ import (
 
 type InitGraphMessage struct {
 	Command string `json:"command,string"`
-	Graph string `json:"graph,string"`
+	Graph   string `json:"graph,string"`
 }
 
 type AddNodeMessage struct {
@@ -112,7 +112,7 @@ func (g *Graph) BroadcastRemoveEdge(e Edge) {
 }
 
 func (g *Graph) BroadcastRenameNode(n Node) {
-	msg := SetNodeNameMessage {
+	msg := SetNodeNameMessage{
 		Command: "SetNodeName",
 		Id:      n.Id,
 		Name:    n.Name,
